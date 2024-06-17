@@ -1,0 +1,7 @@
+*.hdf5
+*.h5
+*.fits
+data/*
+analysis/*
+*.png
+tensity/deprecated/*

@@ -7,8 +7,7 @@ from scipy.spatial import ConvexHull
 def peakThreshold(img,
                   peaks_x,
                   peaks_y,
-                  peak_frac=.5,
-                  returnComponents=False):
+                  peak_frac=.5):
     """
     Parameters
     ----------
@@ -27,7 +26,7 @@ def peakThreshold(img,
     """
 
     structure = np.ones((3, 3)).astype(int)
-    components = []
+    binary = []
     s = [] # surface area
     c = [] # circumference
     w_00 = []
@@ -39,6 +38,8 @@ def peakThreshold(img,
     img[img < 0] = 0
     img[np.isnan(img)] = 0
     img[np.isinf(img)] = 0
+
+    dfs, dus, dchis, W_00, W_01, W_10, W_11 = getPixelContributions(img, peak_thresh, False)
 
     for i in tqdm(range(len(peaks_x))):
         tmap = np.zeros_like(img)
@@ -55,11 +56,8 @@ def peakThreshold(img,
 
         subpoly_pts = get_contour_locs(labeled, target_comp)
         
-        if returnComponents:
-            components.append(subpoly_pts)
+        binary.append(subpoly_pts)
 
-        dfs, dus, dchis, W_00, W_01, W_10, W_11 = getPixelContributions(img, peak_thresh, False)
-        
         s.append(np.sum(np.array(dfs)[subpoly_pts[:, 0], subpoly_pts[:, 1]]))
         c.append(np.sum(np.array(dus)[subpoly_pts[:, 0], subpoly_pts[:, 1]]))
         w_00.append(np.array(W_00))
@@ -67,13 +65,7 @@ def peakThreshold(img,
         w_10.append(np.array(W_10))
         w_11.append(np.array(W_11))
 
-    if returnComponents:
-        return components, s, c, w_00, w_01, w_10, w_11
-    else:
-        return components
-
-##
-
+    return binary, s, c, w_00, w_01, w_10, w_11
 
 def get_marching_contour_VT(data, peak_x, peak_y, peak_frac=0.5, weight=True, offset=[0, 0]):
     """

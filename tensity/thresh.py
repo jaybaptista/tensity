@@ -39,7 +39,7 @@ def peakThreshold(img,
     img[np.isnan(img)] = 0
     img[np.isinf(img)] = 0
 
-    dfs, dus, dchis, W_00, W_01, W_10, W_11 = getPixelContributions(img, peak_thresh, False)
+    
 
     for i in tqdm(range(len(peaks_x))):
         tmap = np.zeros_like(img)
@@ -47,6 +47,7 @@ def peakThreshold(img,
         peak_value = img[peaks_y[i], peaks_x[i]]
 
         peak_thresh = peak_frac * peak_value
+        dfs, dus, dchis, W_00, W_01, W_10, W_11 = getPixelContributions(img, peak_thresh, False)
         bmap = getBinaryMap(img, peak_thresh)
 
         labeled, ncomponents = label(bmap, structure)

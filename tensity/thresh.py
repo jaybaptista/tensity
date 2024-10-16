@@ -7,7 +7,9 @@ from scipy.spatial import ConvexHull
 def peakThreshold(img,
                   peaks_x,
                   peaks_y,
-                  peak_frac=.5):
+                  peak_frac=.5,
+                  return_tensor=True,
+                  scalar_only=False):
     """
     Parameters
     ----------
@@ -61,12 +63,23 @@ def peakThreshold(img,
 
         s.append(np.sum(np.array(dfs)[subpoly_pts[:, 0], subpoly_pts[:, 1]]))
         c.append(np.sum(np.array(dus)[subpoly_pts[:, 0], subpoly_pts[:, 1]]))
-        w_00.append(np.array(W_00))
-        w_01.append(np.array(W_01))
-        w_10.append(np.array(W_10))
-        w_11.append(np.array(W_11))
 
-    return binary, s, c, w_00, w_01, w_10, w_11
+        if return_tensor:
+            w_00.append(np.array(W_00))
+            w_01.append(np.array(W_01))
+            w_10.append(np.array(W_10))
+            w_11.append(np.array(W_11))
+
+    if scalar_only:
+        return s, c
+    tensor = None
+    if return_tensor:
+        tensor = np.array([[w_00, w_01], [w_10, w_11]])
+        return binary, s, c, tensor
+
+    return binary, s, c
+
+    
 
 def get_marching_contour_VT(data, peak_x, peak_y, peak_frac=0.5, weight=True, offset=[0, 0]):
     """

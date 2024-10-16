@@ -31,6 +31,7 @@ def load_density(file, type="herschel"):
     return nh2
 
 def getHeader(file):
+    
     fits_file = fits.open(file)
     header = fits_file[0].header
     return header
